@@ -136,11 +136,15 @@ RUN cd /tmp && wget -O ruby-install-0.6.1.tar.gz https://github.com/postmodern/r
 ENV PATH ${HOME}/.rubies/ruby-2.4.3/bin:${PATH}
 RUN echo 'gem: --env-shebang --no-rdoc --no-ri' >> ~/.gemrc && gem install bundler
 
-# Install Ruby
-RUN touch Gemfile
-RUN echo "source \"https://rubygems.org\"
-          gem \"fastlane\" " >> Gemfile
-RUN bundle install
+# Install fastlane dependency
+RUN sudo mkdir -p /tmp/gem && \
+    sudo chown -R circleci:circleci /tmp/gem && \
+    cd /tmp/gem && \
+    touch Gemfile && \
+    echo "source \"https://rubygems.org\"" >> Gemfile && \
+    echo "gem \"fastlane\"" >> Gemfile && \
+    bundle install && \
+    rm -r /tmp/gem
 
 # Download and install Android SDK
 RUN sudo mkdir -p ${android_home} && \
